@@ -1,6 +1,6 @@
 # Pakistan E-Commerce Sales Analytics Dashboard
 
-![Pakistan E-Commerce Dashboard](dashboard_screenshot.png)
+![Pakistan E-Commerce Dashboard](Pakistan_DV_Dahsboard.jpg)
 
 ## Introduction
 Projek ini dikembangkan sebagai bagian dari capstone project dalam **Algoritma Academy Data Visualization Specialization**. Deliverables yang diharapkan adalah Anda dapat membangun sebuah **dashboard interaktif** menggunakan **R dan Shiny**, dengan fokus pada tampilan user interface dan visualisasi data.
