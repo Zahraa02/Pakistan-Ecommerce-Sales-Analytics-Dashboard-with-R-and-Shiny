@@ -47,3 +47,4 @@ Data yang digunakan dalam proyek ini adalah data e-commerce terbesar di Pakistan
 
 ## Final Dashboard
 Hasil akhir dari projek ini dapat dilihat di ShinyApps.io:
+https://zahranuranisah.shinyapps.io/Pakistan_Ecommerce_Sales_Dashboard/
