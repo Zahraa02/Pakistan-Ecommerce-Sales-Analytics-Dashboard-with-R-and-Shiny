@@ -1,0 +1,606 @@
+---
+title: "Capstone Data Visualization"
+author: "Zahra Nur Anisah"
+date: "`r format(Sys.Date(), '%B %e, %Y')`"
+output:
+  html_document:
+    theme: cosmo
+    highlight: breezedark
+    toc: true
+    toc_float:
+      collapsed: false
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+# clear-up the environment
+rm(list = ls())
+
+# chunk options
+knitr::opts_chunk$set(
+  message = FALSE,
+  warning = FALSE,
+  fig.align = "center",
+  comment = "#>"
+)
+
+options(scipen = 100)
+```
+
+
+Goal: Capstone Dashboard
+
+Tahapan: 
+- Preprocessing 
+  - Cleansing
+  - Perubahan tipe data
+  - Feature Engineering
+  - Aggregasi data
+- Buat Tooltip
+- Visualisasi Data
+- Buat visualisasi interaktif
+- Web dashboard
+
+
+  - Tahapan preprocessing/ wrangling:
+    - ✅Subset kolom ~> select()
+    - ✅Filter baris  ~>  filter()
+    - ✅Mengubah tipe data ~> mutate()
+    - ✅Menambah kolom baru ~> mutate()
+    - ✅Aggregasi data ~>  group_by() + summarise() + ungroup()
+    - ✅Mengurutkan data ~>  arrange()
+  
+  
+# Introduction
+
+```{r, warning=FALSE}
+library(dplyr)
+library(ggplot2) # visualisasi
+library(ggpubr)
+library(scales) # untuk tampilan digit (memberikan koma dll)
+library(glue)
+library(plotly) 
+library(lubridate) # working with datetime
+options(scipen = 100) # supaya output tidak menampilkan notasi ilmiah (10-e10)
+```
+
+# Load Data
+
+Kita akan coba mengeksplorasi kembali data **Pakistan Largest Ecommerce Dataset** menggunakan package dplyr! Mari kita baca terlebih dahulu data kita:
+
+```{r}
+# read data
+data <- read.csv("Pakistan Largest Ecommerce Dataset.csv", stringsAsFactors = TRUE, encoding = "latin1")
+
+# cleansing data
+data_clean <- data %>% 
+  select(
+    #membersihkan yang tidak perlu
+    -c(increment_id, sales_commission_code, Working.Date, BI.Status,MV, Year, Month, Customer.Since, M.Y, FY, X, X.1, X.2, X.3, X.4)) %>% 
+  
+  mutate(
+    #ngubah tipe data
+    created_at= dmy(created_at),
+    sku= as.character(sku),
+    
+    #nambah kolom
+    month= month(created_at, label = FALSE, abbr = TRUE),
+    year= year(created_at)
+  ) %>% 
+  
+  #gantii nama kolom
+  rename(
+    c(product_name = sku, category_name = category_name_1)) %>% 
+
+  filter(
+    #filter hanya menggunakan tahun 2017
+    year(created_at) %in% c(2017),
+    category_name != "\\N",
+    grepl("_", product_name) # filter nama produk yang tidak adaa "_" atau kelihatan seperti barcode 
+  )
+
+data_clean
+```
+
+```{r}
+# cek apabila ada missing data
+data_clean %>% is.na() %>% colSums()
+```
+Poin captone:
+- ketepatan kita menggunakan plot dalam membandingkan data yang ingin kitaa representasikan 
+
+#Page 1(Overview)
+##PLOT 1: (line plot)
+"Monthly Sales Trend in Pakistan for 2017"
+```{r}
+# Data Wrangling
+sales_trend <- data_clean %>% 
+  group_by(month) %>% 
+  summarise(total_sales = sum(grand_total)) %>% 
+  ungroup() %>% 
+  arrange(month)
+sales_trend
+```
+```{r}
+# nambah kolom month singkatan & full month ~> utk x axis di plot & tooltip
+sales_trend <- sales_trend %>%
+  mutate(
+    # kolom singkatan utk sumbu x
+    month_name = factor(month, levels = 1:12, labels = month.abb),
+    # kolom full month utk tooltip
+    full_month_name = factor(month, levels = 1:12, labels = month.name)
+  )
+sales_trend
+```
+
+```{r}
+#buat tooltip desc
+sales_trend <- sales_trend %>% 
+  mutate(
+    label = glue(
+      "Total Sales: {number(total_sales,  big.mark = '.', decimal.mark =',', accuracy = 1)}
+      Month: {full_month_name}"
+    )
+  )
+sales_trend
+```
+
+
+```{r}
+# Visualization ~> dibuat ggplot nyaa
+#"Monthly Sales Trend in Pakistan for 2017"
+
+plot1 <- ggplot(sales_trend, aes(x=month_name, y= total_sales))+
+  
+  geom_line(col="darkgreen", group=1) +
+  geom_point(aes(text=label), col="black") +
+  scale_y_continuous(labels = label_number(big.mark = ".", decimal.mark = ","), 
+                     breaks = seq(0, 100000000, 10000000)) +
+  labs(
+    title = "Monthly Sales Trend",
+    x = NULL,
+    y = "Total Sales"
+  ) +
+  theme_minimal() +
+  theme(
+     plot.title = element_text(hjust = 0.5)
+  )
+
+ggplotly(plot1, tooltip = "text")
+
+```
+> This shows the eCommerce sales growth throughout the year.
+
+## Total Sales
+```{r}
+data_clean
+```
+
+```{r}
+Total_Sales<- data_clean %>% summarise(Total_sales=number(sum(grand_total),  big.mark = '.', decimal.mark =',', accuracy = 1))
+
+Total_Sales
+```
+
+## Total Orders
+```{r}
+Total_Orders<- data_clean %>% summarise(Total_orders=n())
+
+Total_Orders
+```
+## Total Products
+```{r}
+Total_product<- data_clean %>% summarise(total_product=number(sum(qty_ordered),  big.mark = '.', decimal.mark =',', accuracy = 1))
+
+Total_product
+```
+## Total Customer
+```{r}
+Total_customer<- data_clean %>% 
+  summarise(total_cust=number(length(unique(Customer.ID)),  big.mark = '.', decimal.mark =',', accuracy = 1))
+
+Total_customer
+```
+
+
+##PLOT 2: (lolipop plot)
+"Total Orders by Payment Method in Pakistan"
+
+```{r}
+# Data Wrangling 
+fav_payment<- data_clean %>% 
+  group_by(payment_method) %>% 
+  summarise(Payment_type = n()) %>% 
+  ungroup() %>% 
+  arrange(-Payment_type) 
+
+fav_payment
+```
+
+
+```{r}
+fav_payment <- fav_payment %>% 
+  mutate(
+    label = glue(
+      "Payment Method: {payment_method}
+      Total Orders: {number(Payment_type,  big.mark = '.', decimal.mark =',', accuracy = 1)}"
+    )
+  )
+
+fav_payment
+```
+
+
+```{r}
+# Cara 1: INI PAKE LOLIPOP PLOT, efektif
+
+# Visualization ~> dibuat ggplot nyaa
+#"Fav Payment Method"
+plot2 <- ggplot(fav_payment, aes(x = Payment_type, 
+                    y = reorder(payment_method, Payment_type),
+                    text = label)) +
+  
+  geom_segment(aes(x= 0, xend=Payment_type, yend=reorder(payment_method, Payment_type)), color="darkgreen", size= 1) +
+  geom_point(color="black", size=3) +
+  scale_x_continuous(labels = comma) +
+  labs(title = "Top Payment Method",
+       x = "Total Orders",
+       y = NULL) +
+  theme_minimal() +
+  theme(
+     plot.title = element_text(hjust = 0.5)
+  )
+
+ggplotly(plot2, tooltip = "text")
+```
+
+```{r}
+# Cara 2: INI PAKE BAR PLOT, tp susah utk buka tooltip rank paling rendah krn qty dikit jd barnya jg tipis
+
+# Visualization ~> dibuat ggplot nyaa
+#"Fav Payment Method"
+plot2 <- ggplot(fav_payment, aes(x = Payment_type, 
+                    y = reorder(payment_method, Payment_type),
+                    text = label)) +
+  
+  geom_col(aes(fill=Payment_type)) +
+  scale_x_continuous(labels = comma)+
+  scale_fill_gradient(low="black", high="darkgreen") +
+  labs(title = "Top Payment Method in Pakistan 2017",
+       x = "Total Orders",
+       y = NULL) +
+  theme_minimal()+
+  theme(legend.position = "none")
+
+ggplotly(plot2, tooltip = "text")
+```
+>This identifies the most popular payment methods in the country.
+
+
+#Page 2(Sales Analysis)
+## PLOT 3: (line plot)
+"Monthly total sales in each category"
+```{r}
+data_clean
+```
+
+```{r}
+# Data Wrangling
+category_sales_trend <- data_clean %>%
+  filter(category_name =="Beauty & Grooming") %>% 
+  group_by(month) %>% 
+  summarise(total_sales_category = sum(grand_total)) %>% 
+  ungroup() %>% 
+  arrange(month)
+
+category_sales_trend
+```
+
+```{r}
+# nambah kolom month singkatan & full month ~> utk x axis di plot & tooltip
+category_sales_trend <- category_sales_trend %>%
+  mutate(
+    # kolom singkatan utk sumbu x
+    month_name = factor(month, levels = 1:12, labels = month.abb),
+    # kolom full month utk tooltip
+    full_month_name = factor(month, levels = 1:12, labels = month.name)
+  )
+
+category_sales_trend
+```
+
+```{r}
+#buat tooltip desc
+category_sales_trend <- category_sales_trend %>% 
+  mutate(
+    label = glue(
+      "Total Sales: {number(total_sales_category,  big.mark = '.', decimal.mark =',', accuracy = 1)}
+      Month: {full_month_name}"
+    )
+  )
+
+category_sales_trend
+```
+
+
+```{r}
+# CARA 1: INI DGN LINE PLOT, GAMPANG DIBACA
+
+# Visualization ~> dibuat ggplot nyaa
+#"Monthly total sales in each category"
+
+plot3 <- ggplot(category_sales_trend, aes(x=month_name, y= total_sales_category))+
+  
+  geom_line(col="darkgreen", group=1) +
+  geom_point(aes(text=label), col="black") +
+  scale_y_continuous(labels = label_number(big.mark = '.', decimal.mark =','), 
+                     breaks = seq(0, 100000000, 200000)) +
+  labs(
+    title = "Monthly Sales for Beauty & Grooming",
+    x = NULL,
+    y = "Total Sales"
+  ) +
+  theme_minimal() +
+  theme(
+     plot.title = element_text(hjust = 0.5)
+  )
+
+ggplotly(plot3, tooltip = "text")
+```
+
+```{r}
+# CARA 2: INI DGN LOLIPOP PLOT
+
+# Visualization ~> dibuat ggplot nyaa
+#"Monthly total sales in each category"
+plot3 <- ggplot(category_sales_trend, aes(x=month_name, y= total_sales_category, text=label)) +
+  
+  geom_segment(aes(xend=month_name, y=0,yend=total_sales_category), color="darkgreen", size= 1) +
+  geom_point(color="black", size=3) +
+  scale_y_continuous(labels = label_number(,  big.mark = '.', decimal.mark =','),
+                     breaks = seq(0, 100000000, 200000)) +
+  labs(title = "Monthly Total Sales on Beauty & Grooming in Pakistan 2017",
+       x = NULL,
+       y = "Total Sales") +
+  theme_minimal() +
+  theme(
+     plot.title = element_text(hjust = 0.5)
+  )
+
+ggplotly(plot3, tooltip = "text")
+```
+>This gives a view of which month was has the most sales in Pakistan.
+
+
+##PLOT 4: (bar plot)
+"Top 10 Best Selling Product in each category"
+```{r}
+data_clean
+# unique(data_clean$payment_method) #cek jenis pembayaran
+```
+
+```{r}
+# Data Wrangling
+fav_product <- data_clean %>% 
+  filter(category_name =="Mobiles & Tablets") %>% 
+  group_by(product_name) %>% 
+  summarise(total_qty = sum(qty_ordered), total_sold= sum(grand_total)) %>% 
+  ungroup() %>% 
+  arrange(-total_qty) %>% 
+  head(10)
+
+fav_product
+```
+```{r}
+process_product_name <- function(product_name) {
+  parts <- str_split(product_name, " - ") %>% unlist()  # Split by ' - '
+  if (length(parts) > 2) {
+    # Combine the first and last part (brand name & color)
+    return(paste(parts[1], parts[length(parts)], sep = " - "))
+  } else {
+    # If there are not 3 parts, return the product name as is
+    return(product_name)
+  }
+}
+```
+
+
+```{r}
+library(stringr)
+fav_product <- fav_product %>%
+  mutate(short_name = sapply(product_name, process_product_name)) %>%
+  mutate(
+    label = glue(
+      "Product : {product_name}
+      Total Sales : {number(total_sold, big.mark='.', decimal.mark=',', accuracy = 1)}
+      Quantity : {number(as.numeric(total_qty), big.mark='.', decimal.mark=',', accuracy = 1)}"
+    )
+  )
+
+fav_product
+```
+
+```{r}
+# Visualization ~> dibuat ggplot nyaa
+# "Top 10 Best Selling Product in each category"
+plot4 <- ggplot(fav_product, aes(x = total_sold,
+                    y = reorder(short_name, total_sold),
+                    text = label)) +
+  
+  geom_col(aes(fill = total_sold)) +
+  scale_fill_gradient(low="black", high="darkgreen") +
+  labs(title = "Top Mobiles & Tablets Products",
+       x = "Total Sales",
+       y = NULL) +
+  scale_x_continuous(labels = label_number(big.mark = '.', decimal.mark =',')) +
+  theme_minimal() +
+  theme(legend.position = "none",  plot.title = element_text(hjust = 0.5))
+
+ggplotly(plot4, tooltip = "text")
+```
+> This shows the most popular product by the number of items sold & contributed to the highest sales in Pakistan.
+
+
+# Page 3(Customer Preferance)
+##PLOT 5: (bar plot)
+"Quantity Product in each category Ordered over the year 2017"
+```{r}
+data_clean
+```
+
+```{r}
+# Data Wrangling
+rank_qty_pcategory <- data_clean %>% 
+  filter(created_at >= as.Date("2017-01-01") & created_at <= as.Date("2017-01-06")) %>% 
+  group_by(category_name) %>% 
+  summarise(qty_pcategory = sum(qty_ordered)) %>% 
+  ungroup() %>% 
+  arrange(-qty_pcategory) 
+
+rank_qty_pcategory
+```
+
+
+```{r}
+#buat desc tooltip
+rank_qty_pcategory <- rank_qty_pcategory %>% 
+  mutate(label = glue(
+      "Category : {category_name}
+      Quantity : {number(qty_pcategory,  big.mark = '.', decimal.mark =',', accuracy = 1)}"
+    )
+ )
+
+rank_qty_pcategory
+```
+
+```{r}
+# Visualization ~> dibuat ggplot nyaa
+# Quantity Product in each category Ordered over the year 2017"
+plot5 <- ggplot(rank_qty_pcategory, aes(x = qty_pcategory,
+                    y = reorder(
+category_name, qty_pcategory),
+                    text = label)) +
+  
+  geom_col(aes(fill = qty_pcategory)) +
+  scale_fill_gradient(low="black", high="darkgreen") +
+  labs(title = "Top Selling Categories",
+       x = "Quantity",
+       y = NULL) +
+  scale_x_continuous(labels = label_number(big.mark = '.', decimal.mark =',')) +
+  theme_minimal() +
+  theme(legend.position = "none",  plot.title = element_text(hjust = 0.5))
+
+ggplotly(plot5, tooltip = "text")
+```
+>  This shows the most popular categories based on the qty from a certain range of date.
+
+
+##PLOT 6: (scatter plot)
+"Relationship between price and quantity from a certain range of date"
+```{r}
+data_clean
+```
+
+
+```{r}
+# Data Wrangling
+rank_qty_pprice <- data_clean %>% 
+  filter(created_at >= as.Date("2017-01-01") & created_at <= as.Date("2017-12-31")) %>% 
+  group_by(price) %>% 
+  summarise(qty_pprice = sum(qty_ordered)) %>% 
+  ungroup() %>% 
+  arrange(-qty_pprice) 
+
+rank_qty_pprice
+```
+
+
+```{r}
+#buat desc tooltip
+rank_qty_pprice <- rank_qty_pprice %>%
+  mutate(label = glue(
+      "Price : {number(price, big.mark = '.', decimal.mark =',', accuracy = 1)}
+      Quantity : {number(qty_pprice, big.mark = '.', decimal.mark =',', accuracy = 1)}"
+    )
+ )
+
+rank_qty_pprice
+```
+
+
+```{r}
+# Visualization ~> dibuat ggplot nyaa
+# Quantity Product in each category Ordered over the year 2017"
+plot6 <- ggplot(rank_qty_pprice, aes(x = qty_pprice,
+                    y = price,
+                    text = label)) +
+  
+  geom_jitter(color="darkgreen") +
+  labs(title = "Relationship Between Price and Quantity Sold Products",
+       x = "Quantity",
+       y = "Price") +
+  scale_x_continuous(labels = label_number(big.mark = '.', decimal.mark =',')) +
+  scale_y_continuous(labels = label_number(big.mark = '.', decimal.mark =','))+
+  theme_minimal() +
+  theme(
+     plot.title = element_text(hjust = 0.5)
+  )
+
+ggplotly(plot6, tooltip = "text")
+```
+> Shows the relationship between price and quantity. The higher the price, the less it is sold, and the higher it was sold, the lower the price are.
+
+
+##PLOT 7: (line plot)
+"Sales/ Trend over date with many categories(top 8)"
+```{r}
+data_clean
+```
+
+```{r}
+# Data Wrangling
+rank_sales_cat <- data_clean %>% 
+  filter(created_at >= as.Date("2017-01-01") & created_at <= as.Date("2017-01-06")) %>% 
+  group_by(category_name) %>% 
+  summarise(sales = sum(grand_total)) %>% 
+  ungroup() %>% 
+  arrange(-sales) 
+
+rank_sales_cat
+```
+
+```{r}
+rank_sales_cat <- rank_sales_cat %>% 
+  mutate(
+    label = glue(
+      "Category: {category_name}
+      Total Sales: {number(sales,  big.mark = '.', decimal.mark =',', accuracy = 1)}"
+    )
+  )
+
+rank_sales_cat
+```
+
+```{r}
+# Visualization ~> dibuat ggplot nyaa
+#"Top Categories by Sales"
+plot7 <- ggplot(rank_sales_cat, aes(x = sales, 
+                    y = reorder(category_name, sales),
+                    text = label)) +
+  
+  geom_segment(aes(x= 0, xend=sales, yend=reorder(category_name, sales)), color="darkgreen", size= 1) +
+  geom_point(color="black", size=3) +
+  scale_x_continuous(labels = label_number(big.mark = '.', decimal.mark =',')) +
+  labs(title = "Top Category Sales",
+       x = "Total Sales",
+       y = NULL) +
+  theme_minimal() +
+  theme(
+     plot.title = element_text(hjust = 0.5)
+  )
+
+ggplotly(plot7, tooltip = "text")
+```
+>  This ranked the highest sales categories from a certain range of date.
+
+#DONE
