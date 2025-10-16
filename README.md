@@ -11,7 +11,7 @@ The Pakistan E-Commerce Trends Dashboard is an interactive data visualization pr
 The main goal was to design and develop an interactive dashboard using **R and Shiny**, delivering **clear data storytelling**, **visual clarity**, and **actionable business insights** through engaging analytics.  
 
 The dashboard provides insights into:  
-- 📈 **Overall Sales Performance** – Track total transactions, revenue, and customer metrics.  
+- 📈 **Overall Sales Performance** --> Track total transactions, revenue, and customer metrics.  
 - 📅 **Monthly Sales Trends** – Identify peak and low-performing months throughout 2017.  
 - 🏆 **Top Products & Categories** – Discover which product groups drive the most sales.  
 - 💳 **Customer Payment Preferences** – Understand which payment methods dominate the market.  
