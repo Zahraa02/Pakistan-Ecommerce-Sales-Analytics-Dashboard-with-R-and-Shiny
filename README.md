@@ -3,6 +3,7 @@
 An interactive data visualization dashboard that uncovers **Pakistan’s 2017 e-commerce sales trends, customer behavior, and payment patterns**, built using **R and Shiny**.  
 
 ![Pakistan E-Commerce Dashboard](Pakistan_DV_Dahsboard.jpg)
+
 ---
 
 ## 🚀 Overview  
