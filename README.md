@@ -21,7 +21,7 @@ It emphasizes **clarity, interactivity, and storytelling** to support **data-dri
 ---
 
 ## 🎥 Live Demo  
-🔗 [Explore the Dashboard on ShinyApps.io](https://zahranuranisah.shinyapps.io/Pakistan_Ecommerce_Sales_Dashboard/) 
+🔗 https://zahranuranisah.shinyapps.io/Pakistan_Ecommerce_Sales_Dashboard/
 
 ---
 
