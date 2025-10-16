@@ -26,14 +26,6 @@ It emphasizes **clarity, interactivity, and storytelling** to support **data-dri
 
 ---
 
-## 💡 Why This Matters  
-This dashboard transforms raw e-commerce data from Pakistan (2017) into **clear, actionable insights** about customer behavior, product trends, and payment preferences.  
-By visualizing transaction data, it helps identify which categories and discount strategies drive performance — providing **practical takeaways** for business and policy decisions in emerging markets.  
-
-Beyond this specific case, it demonstrates how **data visualization and dashboard design** can turn large, complex datasets into interactive insights — a **critical skill for data-driven decision-making** across industries.  
-
----
-
 ## 💼 Business Questions Answered  
 - Which product categories and payment methods contributed most to total sales performance in 2017?  
 - How did monthly sales trends change throughout the year, and what periods showed peak activity?  
@@ -95,6 +87,13 @@ It includes detailed information about products, pricing, discounts, quantities,
 - **Framework:** Shiny  
 - **Libraries:** ggplot2, dplyr, plotly, shinythemes, flexdashboard  
 - **IDE:** RStudio  
+
+---
+## 💡 Why This Matters  
+This dashboard transforms raw e-commerce data from Pakistan (2017) into **clear, actionable insights** about customer behavior, product trends, and payment preferences.  
+By visualizing transaction data, it helps identify which categories and discount strategies drive performance — providing **practical takeaways** for business and policy decisions in emerging markets.  
+
+Beyond this specific case, it demonstrates how **data visualization and dashboard design** can turn large, complex datasets into interactive insights — a **critical skill for data-driven decision-making** across industries.  
 
 ---
 
