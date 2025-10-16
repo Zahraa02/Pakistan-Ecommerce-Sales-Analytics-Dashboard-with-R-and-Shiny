@@ -1,4 +1,4 @@
-# 📊 Pakistan E-commerce Trends Dashboard  
+# 📊 Pakistan E-commerce Sales Analytics Dashboard  
 
 An interactive data visualization dashboard that uncovers **Pakistan’s 2017 e-commerce sales trends, customer behavior, and payment patterns**, built using **R and Shiny**.  
 
