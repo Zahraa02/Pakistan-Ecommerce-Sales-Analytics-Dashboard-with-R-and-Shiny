@@ -22,12 +22,9 @@ It emphasizes **clarity, interactivity, and storytelling** to support **data-dri
 ---
 
 ## 🎥 Live Demo  & Project Access
-- 💻 **Interactive Dashboard (R Shiny)**  
-  Experience the live version of the project here: https://zahranuranisah.shinyapps.io/Pakistan_Ecommerce_Sales_Dashboard/
-- 🌐 **HTML Report (Code & Walkthrough)**
-  Explore the exported HTML report containing the full R code, visualizations, and analysis results on GitHub Pages: https://zahraa02.github.io/Pakistan-ECommerce-Sales-Analytics-Dashboard-with-R-and-Shiny/
-- 🎬 **Demo Video**
-  Watch the walkthrough video showcasing the dashboard’s features and insights:  
+- 💻 **Interactive Dashboard (R Shiny)** : https://zahranuranisah.shinyapps.io/Pakistan_Ecommerce_Sales_Dashboard/
+- 🌐 **HTML Report (Code & Walkthrough)** : https://zahraa02.github.io/Pakistan-ECommerce-Sales-Analytics-Dashboard-with-R-and-Shiny/
+- 🎬 **Demo Video** :
 ---
 
 ## 💼 Business Questions Answered  
