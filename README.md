@@ -25,7 +25,7 @@ It emphasizes **clarity, interactivity, and storytelling** to support **data-dri
 ## 📈 Live Dashboard & HTML Report  
 
 - 💻 [Interactive Dashboard (R Shiny)](https://zahranuranisah.shinyapps.io/Pakistan_Ecommerce_Sales_Dashboard/)  
-- 🌐 [HTML Report – Code & Walkthrough](https://zahraa02.github.io/Pakistan-ECommerce-Sales-Analytics-Dashboard-with-R-and-Shiny/)  
+- 🌐 [HTML Report – Code & Walkthrough](https://zahraa02.github.io/Pakistan-Ecommerce-Sales-Analytics-Dashboard-with-R-and-Shiny/)
 
 ---
 
