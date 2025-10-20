@@ -8,6 +8,7 @@ An interactive data visualization dashboard that uncovers **Pakistan’s 2017 e-
 
 ## 🚀 Overview  
 The Pakistan E-Commerce Trends Dashboard is an interactive data visualization project developed for the **Data Visualization Capstone** at **Algoritma Academy**.  
+
 The main goal was to design and develop an interactive dashboard using **R and Shiny**, delivering **clear data storytelling**, **visual clarity**, and **actionable business insights** through engaging analytics.  
 
 The dashboard provides insights into:  
@@ -21,16 +22,17 @@ It emphasizes **clarity, interactivity, and storytelling** to support **data-dri
 
 ---
 
-## 🎥 Live Demo  & Project Access
-- 💻 **Interactive Dashboard (R Shiny)** : https://zahranuranisah.shinyapps.io/Pakistan_Ecommerce_Sales_Dashboard/
-- 🌐 **HTML Report (Code & Walkthrough)** : https://zahraa02.github.io/Pakistan-ECommerce-Sales-Analytics-Dashboard-with-R-and-Shiny/
-  
+## 📈 Live Dashboard & HTML Report  
+
+- 💻 [Interactive Dashboard (R Shiny)](https://zahranuranisah.shinyapps.io/Pakistan_Ecommerce_Sales_Dashboard/)  
+- 🌐 [HTML Report – Code & Walkthrough](https://zahraa02.github.io/Pakistan-ECommerce-Sales-Analytics-Dashboard-with-R-and-Shiny/)  
+
 ---
 
-## 💼 Business Questions Answered  
-- Which product categories and payment methods contributed most to total sales performance in 2017?  
-- How did monthly sales trends change throughout the year, and what periods showed peak activity?  
-- How does product pricing relate to customer demand? Do lower prices drive higher sales volume?  
+## 💼 Business Questions Examples  
+- "Which product categories and payment methods contributed most to total sales performance in 2017?"  
+- "How did monthly sales trends change throughout the year, and what periods showed peak activity?"  
+- "How does product pricing relate to customer demand? Do lower prices drive higher sales volume?"  
 
 ---
 ## 📈 Key Insights  
@@ -43,7 +45,7 @@ It emphasizes **clarity, interactivity, and storytelling** to support **data-dri
   - This insight helps businesses plan marketing campaigns or restock high-demand products before similar peak months.  
 
 - **Price–Quantity Relationship**  
-  - A clear inverse relationship exists between price and quantity sold — higher-priced items sell in smaller quantities, while lower-priced products drive higher volume.  
+  - A clear inverse relationship exists between price and quantity sold, higher-priced items sell in smaller quantities, while lower-priced products drive higher volume.  
   - This finding helps guide **pricing strategies and inventory management** for competitive yet profitable operations.  
 
 ---
@@ -94,7 +96,7 @@ It includes detailed information about products, pricing, discounts, quantities,
 This dashboard transforms raw e-commerce data from Pakistan (2017) into **clear, actionable insights** about customer behavior, product trends, and payment preferences.  
 By visualizing transaction data, it helps identify which categories and discount strategies drive performance — providing **practical takeaways** for business and policy decisions in emerging markets.  
 
-Beyond this specific case, it demonstrates how **data visualization and dashboard design** can turn large, complex datasets into interactive insights — a **critical skill for data-driven decision-making** across industries.  
+Beyond this specific case, it demonstrates how **data visualization and dashboard design** can turn large, complex datasets into interactive insights, a **critical skill for data-driven decision-making** across industries.  
 
 ---
 
